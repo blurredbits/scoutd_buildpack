@@ -38,14 +38,6 @@ function check_requires_rebuild {
   fi
 }
 
-# Check if source exits, if it does - don't re-build!
-# RECOMPILE_SCOUTD environment config can be set to override
-#if [ $RECOMPILE_SCOUTD != 1 ]; then
-#  check_requires_rebuild
-#else
-#  echo "-----> Explicit re-build requested, re-building"
-#fi
-
 # Vendor scoutd
 echo "-----> Downloading scoutd"
 echo "$BUILD_DIR/$SCOUTD_SOURCE_DIR"
@@ -58,9 +50,12 @@ ar x $SCOUTD_PACKAGE
 echo "-----> Untarring scoutd"
 tar -zxvf data.tar.gz
 
+echo "-----> Make Build Directory"
+mkdir -p $BUILD_DIR/bin
+
 echo "-----> Generating the boot script"
 cat >>$BUILD_DIR/bin/boot.sh <<'EOF'
-!/usr/bin/env bash
+#!/usr/bin/env bash
 
 echo "Yup. Made a file."
 EOF
