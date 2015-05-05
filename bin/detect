@@ -2,7 +2,7 @@
 # bin/detect <build-dir>
 
 if [ -f $1/scoutd ]; then
-  echo "scoutd"
+  echo "Scoutd"
   exit 0
 else
   exit 1
