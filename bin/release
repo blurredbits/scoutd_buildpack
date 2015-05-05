@@ -1,7 +1,2 @@
 #!/usr/bin/env bash
-
-cat << EOF
----
-config_vars:
-  SYSTEM_NAME: Heroku
-EOF
+# bin/release <build-dir>

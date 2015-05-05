@@ -59,11 +59,11 @@ echo "-----> Untarring scoutd"
 tar -zxvf data.tar.gz
 
 echo "-----> Generating the boot script"
-#cat >>$BUILD_DIR/bin/boot.sh <<'EOF'
-#!/usr/bin/env bash
+cat >>$BUILD_DIR/bin/boot.sh <<'EOF'
+!/usr/bin/env bash
 
-#echo "Yup. Made a file."
-#EOF
+echo "Yup. Made a file."
+EOF
 
 # mkdir -p conf.d
 # mkdir -p tmp/conf
@@ -83,7 +83,7 @@ echo "-----> Generating the boot script"
 # vendor/scoutd/bin/scoutd -c scoutrc -p tmp/.scoutd.pid -s tmp/.scoutd.state -I -v
 
 
-#chmod +x $BUILD_DIR/bin/boot.sh
+chmod +x $BUILD_DIR/bin/boot.sh
 
 echo $SCOUTD_VERSION > $CACHE_BUILD_VERSION_FILE
 cp -r $BUILD_DIR/vendor $CACHE_DIR/vendor
