@@ -11,40 +11,7 @@ BUILD_DIR=$1
 CACHE_DIR=$2
 CACHE_BUILD_VERSION_FILE="$CACHE_DIR/BUILD_VERSION"
 
-if [ ! -d $CACHE_DIR ]; then
-  echo "-----> Creating cache dir ($CACHE_DIR) for optimization of future builds/pushes"
-  mkdir $CACHE_DIR
-fi
 
-function check_requires_rebuild {
-  echo "-----> Checking environment for presence of installed scoutd"
-
-  # Pre-existing build?
-  if [ -e $CACHE_BUILD_VERSION_FILE ]; then
-    CACHE_BUILD_VERSION =`cat $CACHE_DIR/BUILD_VERSION`
-
-    if [ "$CACHE_BUILD_VERSION" == "$SCOUTD_VERSION" ]; then
-      echo "-----> Existing and up-to-date app detected (v$CACHE_BUILD_VERSION). No need to re-compile"
-      cp -r $CACHE_DIR/vendor $BUILD_DIR/vendor
-      cp -r $CACHE_DIR/bin $BUILD_DIR/bin
-      echo "-----> Done"
-      exit 0
-    fi
-
-    echo "-----> Existing environment will be modified (from v$CACHE_BUILD_VERSION), installing scoutd v$SCOUTD_VERSION"
-
-  else
-    echo "-----> New environment detected, installing scoutd v$SCOUTD_VERSION"
-  fi
-}
-
-# Check if source exits, if it does - don't re-build!
-# RECOMPILE_SCOUTD environment config can be set to override
-if [ $RECOMPILE_SCOUTD != 1]; then
-  check_requires_rebuild
-else
-  echo "-----> Explicit re-build requested, re-building"
-fi
 
 # Vendor scoutd
 echo "-----> Downloading scoutd"
@@ -58,32 +25,32 @@ ar x $SCOUTD_PACKAGE
 echo "-----> Untarring scoutd"
 tar -zxvf data.tar.gz
 
-echo "-----> Generating the boot script"
-cat >>$BUILD_DIR/bin/boot.sh <<'EOF'
-#!/usr/bin/env bash
+# echo "-----> Generating the boot script"
+# cat >>$BUILD_DIR/bin/boot.sh <<'EOF'
+# #!/usr/bin/env bash
 
-mkdir -p conf.d
-mkdir -p tmp/conf
+# mkdir -p conf.d
+# mkdir -p tmp/conf
 
-if [ "$SYSTEM_NAME" == ""]; then
-  export SYSTEM_NAME=Heroku
-fi
+# if [ "$SYSTEM_NAME" == ""]; then
+#   export SYSTEM_NAME=Heroku
+# fi
 
-for f in `ls conf.d`
-do
-  echo "Processing conf.d/$f file..."
-  cat conf.d/$f > tmp/conf/$f.tmp && mv tmp/conf/$f.tmp conf.d/$f
-done
+# for f in `ls conf.d`
+# do
+#   echo "Processing conf.d/$f file..."
+#   cat conf.d/$f > tmp/conf/$f.tmp && mv tmp/conf/$f.tmp conf.d/$f
+# done
 
-cat scoutrc > scoutrc.tmp && mv scoutrc.tmp scoutrc
+# cat scoutrc > scoutrc.tmp && mv scoutrc.tmp scoutrc
 
-vendor/scoutd/bin/scoutd -c scoutrc -p tmp/.scoutd.pid -s tmp/.scoutd.state -I -v
-EOF
+# vendor/scoutd/bin/scoutd -c scoutrc -p tmp/.scoutd.pid -s tmp/.scoutd.state -I -v
+# EOF
 
-chmod +x $BUILD_DIR/bin/boot.sh
+# chmod +x $BUILD_DIR/bin/boot.sh
 
-echo $SCOUTD_VERSION > $CACHE_BUILD_VERSION_FILE
-cp -r $BUILD_DIR/vendor $CACHE_DIR/vendor
-cp -r $BUILD_DIR/bin $CACHE_DIR/bin
+# echo $SCOUTD_VERSION > $CACHE_BUILD_VERSION_FILE
+# cp -r $BUILD_DIR/vendor $CACHE_DIR/vendor
+# cp -r $BUILD_DIR/bin $CACHE_DIR/bin
 
 echo "-----> Done"
